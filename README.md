@@ -1,0 +1,2 @@
+# MyJniDemo
+Jni Demo

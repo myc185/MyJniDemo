@@ -11,6 +11,8 @@ class MainActivity : AppCompatActivity() {
 
     private var mName: String = "Lucky"
 
+    private var mHeight: Double = 175.0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +34,32 @@ class MainActivity : AppCompatActivity() {
             changeIntAge()
             Log.i("MainActivity", "修改后：${mAge}")
         }
+
+        binding.btn3.setOnClickListener {
+            Log.i("MainActivity", "修改前：${mHeight}")
+            changeDoubleHeight()
+            Log.i("MainActivity", "修改后：${mHeight}")
+        }
+
+        binding.btn4.setOnClickListener {
+            callKotlinMethod()
+        }
+    }
+
+    /***
+     * "(II)I"
+     * 被C层调用的方法
+     */
+    fun add(number1: Int, number2: Int): Int {
+        return number1 + number2
+    }
+
+    /***
+     * 被C调用的方法 (Ljava/lang/String;I) Ljava/lang/String;
+     */
+    fun showString(str: String, num: Int): String {
+        Log.i("MainActivity", "Value from C++ str: $str  num: $num")
+        return "【$str】"
     }
 
 
@@ -39,7 +67,9 @@ class MainActivity : AppCompatActivity() {
 
     external fun changeStringName() //修改String name
 
+    external fun changeDoubleHeight() //修改Double height
 
+    external fun callKotlinMethod() //在C层中调用Kotlin代码
 
 
     companion object {

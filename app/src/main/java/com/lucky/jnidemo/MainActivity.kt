@@ -44,6 +44,29 @@ class MainActivity : AppCompatActivity() {
         binding.btn4.setOnClickListener {
             callKotlinMethod()
         }
+
+        binding.btn5.setOnClickListener {
+            val ints = intArrayOf(1, 2, 3, 4, 5, 6)
+            val strs = arrayOf("李小龙", "李连杰", "李元霸")
+            testArrayAction(99, "你好", ints, strs)
+
+            for (anInt in ints) {
+                Log.d("MainActivity", "(Kotlin)修改后: ints:$anInt")
+            }
+
+            for (str in strs) {
+                Log.e("MainActivity", "(Kotlin)修改后: strs:$str")
+            }
+        }
+
+        binding.btn6.setOnClickListener {
+            val person = Person()
+            person.name = "张三"
+            person.age = 18
+            putObject(person, "Kotlin文本")
+            Log.i("MainActivity", "(Kotlin)修改后, person:$person")
+
+        }
     }
 
     /***
@@ -70,6 +93,11 @@ class MainActivity : AppCompatActivity() {
     external fun changeDoubleHeight() //修改Double height
 
     external fun callKotlinMethod() //在C层中调用Kotlin代码
+
+    external fun testArrayAction(count: Int, textInfo: String, ints: IntArray, strs: Array<String>) //在C层中修改数组
+
+    // 只玩Student对象里面的成员
+    external fun putObject(person: Person, str: String) // 传递引用类型，传递对象
 
 
     companion object {

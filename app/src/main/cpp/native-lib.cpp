@@ -104,3 +104,86 @@ Java_com_lucky_jnidemo_MainActivity_callKotlinMethod(JNIEnv *env, jobject thiz) 
     const char *resultStr = env->GetStringUTFChars(resultStrJ, NULL);
     LOGD("result2:%s\n", resultStr);
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_lucky_jnidemo_MainActivity_testArrayAction(JNIEnv *env, jobject thiz, jint count, jstring text_info, jintArray ints, jobjectArray strs) {
+
+    //++++++++++++++++++++++++++ 操作Int数组
+    LOGD("count:%d\n", count);
+    const char *_textInfoStr = env->GetStringUTFChars(text_info, NULL);
+    LOGD("text_info:%s\n", _textInfoStr);
+    env->ReleaseStringUTFChars(text_info, _textInfoStr); //释放
+
+    int intsLen = env->GetArrayLength(ints); //获取数组个数
+
+    for (int i = 0; i < intsLen; ++i) {
+        jint *_ints = env->GetIntArrayElements(ints, NULL);
+        *(_ints + i) = (i + 1000001); //修改数组的值
+        LOGD("C++ _ints item:%d\n", *(_ints + i));
+        // JNI_OK 0 == 代表 先用操纵杆刷新到JVM，JVM会更新上层代码。再释放C++层数组
+        // JNI_COMMIT 1 == 代表 用操纵杆刷新到JVM，JVM会更新上层代码
+        // JNI_ABORT 2 == 代表 释放C++层数组
+        env->ReleaseIntArrayElements(ints, _ints, JNI_OK); //在数组循环中，一定要记得释放
+    }
+
+    //++++++++++++++++++++++++++ 操作String数组
+    int strsLen = env->GetArrayLength(strs);
+    for (int i = 0; i < strsLen; ++i) {
+        jobject item = env->GetObjectArrayElement(strs, i); //获取每一个值
+        jstring itemStr = (jstring) item;
+        const char *itemStr_1 = env->GetStringUTFChars(itemStr, NULL);
+        LOGI("C++ 修改前itemStr_:%s\n", itemStr_1);
+        env->ReleaseStringUTFChars(itemStr, itemStr_1);
+
+        jstring value = env->NewStringUTF("AAAAAAA");
+        env->SetObjectArrayElement(strs, i, value); //修改数组值
+        jobject item2 = env->GetObjectArrayElement(strs, i);
+        jstring itemStr2 = (jstring) item2;
+        const char *itemStr_2 = env->GetStringUTFChars(itemStr2, NULL);
+        LOGI("C++ 修改后itemStr_2:%s\n", itemStr_2);
+        env->ReleaseStringUTFChars(itemStr2, itemStr_2);
+
+    }
+
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_lucky_jnidemo_MainActivity_putObject(JNIEnv *env, jobject thiz, jobject person, jstring str) {
+
+    const char *_str = env->GetStringUTFChars(str, NULL);
+    LOGD("_str:%s\n", _str);
+    env->ReleaseStringUTFChars(str, _str);
+    jclass mStudentClass = env->GetObjectClass(person);
+    // toString
+    jmethodID toStringMethod = env->GetMethodID(mStudentClass, "toString", "()Ljava/lang/String;");
+    jstring results = (jstring) env->CallObjectMethod(person, toStringMethod);
+    const char *result = env->GetStringUTFChars(results, NULL);
+    LOGD("C++ toString:%s\n", result);
+    env->ReleaseStringUTFChars(results, result);
+
+    // setName
+    jmethodID setNameMethod = env->GetMethodID(mStudentClass, "setName", "(Ljava/lang/String;)V");
+    jstring nameS = env->NewStringUTF("李四");
+    env->CallVoidMethod(person, setNameMethod, nameS);
+
+    // getName
+    jmethodID getNameMethod = env->GetMethodID(mStudentClass, "getName", "()Ljava/lang/String;");
+    jstring nameS2 = (jstring) env->CallObjectMethod(person, getNameMethod);
+    const char *nameS3 = env->GetStringUTFChars(nameS2, NULL);
+    LOGD("C++ getName:%s\n", nameS3);
+    env->ReleaseStringUTFChars(nameS2, nameS3);
+
+    // setAge
+    jmethodID setAgeMethod = env->GetMethodID(mStudentClass, "setAge", "(I)V");
+    env->CallVoidMethod(person, setAgeMethod, 99);
+
+    // getAge
+    jmethodID getAgeMethod = env->GetMethodID(mStudentClass, "getAge", "()I");
+    int age = env->CallIntMethod(person, getAgeMethod);
+    LOGD("C++ getAge:%d\n", age);
+
+    env->DeleteLocalRef(mStudentClass);
+
+}

@@ -2,18 +2,12 @@ package com.lucky.jnidemo;
 
 /**
  * @Author: Lucky Mo
- * @CreateDate: 2022/7/14 15:59
+ * @CreateDate: 2022/7/15 16:47
  * @Description:
  */
-public class Person {
-
+public class Student {
     private String name;
     private int age;
-    private static Student student;
-
-    public static void putStudent(Student student) {
-        Person.student = student;
-    }
 
     public String getName() {
         return name;
@@ -31,20 +25,11 @@ public class Person {
         this.age = age;
     }
 
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        Person.student = student;
-    }
-
     @Override
     public String toString() {
-        return "Person{" +
+        return "Student{" +
                 "name='" + name + '\'' +
                 ", age=" + age +
-                ", student=" + student +
                 '}';
     }
 }

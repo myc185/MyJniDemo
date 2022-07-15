@@ -187,3 +187,49 @@ Java_com_lucky_jnidemo_MainActivity_putObject(JNIEnv *env, jobject thiz, jobject
     env->DeleteLocalRef(mStudentClass);
 
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_lucky_jnidemo_MainActivity_insertObject(JNIEnv *env, jobject thiz) {
+
+    // @Student对象
+    jclass studentClass = env->FindClass("com/lucky/jnidemo/Student");
+    jobject student = env->AllocObject(studentClass);
+
+    // setName
+    jmethodID setNameMethod = env->GetMethodID(studentClass, "setName", "(Ljava/lang/String;)V");
+    jstring value1 = env->NewStringUTF("张三");
+    env->CallVoidMethod(student, setNameMethod, value1);
+
+    // setAge
+    jmethodID setAgeMethod = env->GetMethodID(studentClass, "setAge", "(I)V");
+    env->CallVoidMethod(student, setAgeMethod, 99);
+
+    // @Person对象
+    jclass personClass = env->FindClass("com/lucky/jnidemo/Person");
+    jobject person = env->AllocObject(personClass); // C++ 分配一个对象出来，不会调用此对象的构造函数
+    // env->NewObject();  // C++ 实例化一个对象出来，会调用此对象的构造函数，相当于： new XXX();
+
+    // void CallVoidMethod(person obj, jmethodID methodID, ...)
+    jmethodID setStudent = env->GetMethodID(personClass, "setStudent", "(Lcom/lucky/jnidemo/Student;)V");
+    env->CallVoidMethod(person, setStudent, student);
+
+    // static void putStudent
+    jmethodID putStudent = env->GetStaticMethodID(personClass, "putStudent", "(Lcom/lucky/jnidemo/Student;)V");
+    env->CallStaticVoidMethod(personClass, putStudent, student);
+
+    // TODO 释放工作
+    // 释放方式一
+    env->DeleteLocalRef(personClass);
+    env->DeleteLocalRef(student);
+    env->DeleteLocalRef(value1);
+    env->DeleteLocalRef(personClass);
+    env->DeleteLocalRef(person);
+    // 释放方式二
+    /*env->GetStringUTFChars()
+    env->ReleaseStringUTFChars()*/
+
+    // 释放方式三
+    /*new StudentCPP对象
+    delete StudentCPP对象*/
+}

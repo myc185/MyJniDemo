@@ -67,6 +67,11 @@ class MainActivity : AppCompatActivity() {
             Log.i("MainActivity", "(Kotlin)修改后, person:$person")
 
         }
+
+        binding.btn7.setOnClickListener {
+            insertObject()
+        }
+
     }
 
     /***
@@ -96,8 +101,11 @@ class MainActivity : AppCompatActivity() {
 
     external fun testArrayAction(count: Int, textInfo: String, ints: IntArray, strs: Array<String>) //在C层中修改数组
 
-    // 只玩Student对象里面的成员
+    //只玩Student对象里面的成员
     external fun putObject(person: Person, str: String) // 传递引用类型，传递对象
+
+
+    external fun insertObject()
 
 
     companion object {
